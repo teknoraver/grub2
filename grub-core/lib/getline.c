@@ -40,7 +40,6 @@ grub_file_getline (grub_file_t file)
   char c;
   grub_size_t pos = 0;
   char *cmdline;
-  int have_newline = 0;
   grub_size_t max_len = 64;
 
   /* Initially locate some space.  */
@@ -57,6 +56,8 @@ grub_file_getline (grub_file_t file)
       if (c == '\r')
 	continue;
 
+      if (c == '\n')
+	break;
 
       if (pos + 1 >= max_len)
 	{
@@ -70,23 +71,10 @@ grub_file_getline (grub_file_t file)
 	    }
 	}
 
-      if (c == '\n')
-	{
-	  have_newline = 1;
-	  break;
-	}
-
       cmdline[pos++] = c;
     }
 
   cmdline[pos] = '\0';
-
-  /* If the buffer is empty, don't return anything at all.  */
-  if (pos == 0 && !have_newline)
-    {
-      grub_free (cmdline);
-      cmdline = 0;
-    }
 
   return cmdline;
 }
